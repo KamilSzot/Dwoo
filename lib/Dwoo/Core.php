@@ -453,7 +453,7 @@ class Dwoo_Core
     protected function initRuntimeVars(Dwoo_ITemplate $tpl)
     {
         $this->runtimePlugins = array();
-        $this->scope = $this->data;
+        $this->scope =& $this->data;
         $this->scopeTree = array();
         $this->stack = array();
         $this->curBlock = null;
@@ -1518,22 +1518,27 @@ class Dwoo_Core
         }
 
         if ($absolute===true) {
-            $this->scope = $this->data;
+            $this->scope =& $this->data;
             $this->scopeTree = array();
         }
 
         while (($bit = array_shift($scope)) !== null) {
             if ($bit === '_' || $bit === '_parent') {
                 array_pop($this->scopeTree);
-                $this->scope = $this->data;
+                $this->scope =& $this->data;
                 $cnt = count($this->scopeTree);
                 for ($i=0;$i<$cnt;$i++)
                     $this->scope = $this->scope[$this->scopeTree[$i]];
             } elseif ($bit === '__' || $bit === '_root') {
-                $this->scope = $this->data;
+                $this->scope =& $this->data;
                 $this->scopeTree = array();
             } elseif (isset($this->scope[$bit])) {
-                $this->scope = $this->scope[$bit];
+                if($this->scope instanceof ArrayAccess) {
+                    $tmp = $this->scope[$bit];
+                    $this->scope =& $tmp;
+                } else {
+                    $this->scope =& $this->scope[$bit];
+                }
                 $this->scopeTree[] = $bit;
             } else {
                 unset($this->scope);
