@@ -1528,7 +1528,7 @@ class Dwoo_Core
                 $this->scope =& $this->data;
                 $cnt = count($this->scopeTree);
                 for ($i=0;$i<$cnt;$i++)
-                    $this->scope = $this->scope[$this->scopeTree[$i]];
+                    $this->scope =& $this->scope[$this->scopeTree[$i]];
             } elseif ($bit === '__' || $bit === '_root') {
                 $this->scope =& $this->data;
                 $this->scopeTree = array();
